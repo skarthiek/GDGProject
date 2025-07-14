@@ -18,30 +18,22 @@ def get_gemini_embedding(text):
 def create_vectorstore(text, chunk_size=500, chunk_overlap=100):
     splitter = CharacterTextSplitter(separator="\n", chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     docs = splitter.create_documents([text])
-    
-    # Create embeddings for all documents
     texts = [doc.page_content for doc in docs]
     embeddings = [get_gemini_embedding(text) for text in texts]
-    
-    # Create FAISS index manually
     import faiss
     dimension = len(embeddings[0])
     index = faiss.IndexFlatL2(dimension)
     embeddings_array = np.array(embeddings).astype('float32')
     index.add(embeddings_array)
-    
-    # Create a simple vectorstore wrapper
     class SimpleVectorStore:
         def __init__(self, index, docs):
             self.index = index
             self.docs = docs
-            
         def similarity_search(self, query, k=30):
             query_embedding = get_gemini_embedding(query)
             query_vector = np.array([query_embedding]).astype('float32')
             distances, indices = self.index.search(query_vector, k)
             return [self.docs[i] for i in indices[0] if i < len(self.docs)]
-    
     return SimpleVectorStore(index, docs)
 
 def get_answer(db, query, k=30):

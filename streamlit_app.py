@@ -4,10 +4,8 @@ from dotenv import load_dotenv
 from streamlit_lottie import st_lottie
 import requests
 
-# Load environment variables
 load_dotenv()
 
-# Remove OpenAI imports and usage, add Gemini
 import google.generativeai as genai
 
 gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -16,11 +14,6 @@ genai.configure(api_key=gemini_api_key)
 from pdf_parser import extract_text_from_pdf
 from csv_parser import extract_text_from_csv
 from rag_pipeline import create_vectorstore, get_answer
-
-# Remove OpenAI client setup
-# from openai import OpenAI
-# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-# openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
 def get_hr_advice(resume_text, job_desc_text):
     prompt = f"""
@@ -54,14 +47,12 @@ def load_lottie_url(url):
 
 st.set_page_config(page_title="RAG Chatbot", layout="wide")
 
-# Load animation
 lottie_animation = load_lottie_url("https://assets7.lottiefiles.com/packages/lf20_jcikwtux.json")
 
-# User type selection
 user_type = st.sidebar.selectbox("Are you a staff or a student?", ["Select", "Staff", "Student"])
 
 if user_type == "Student":
-    st.title("📝 ATS Resume and Job Description Analyzer")
+    st.title(" 4dd ATS Resume and Job Description Analyzer")
 
     resume_file = st.file_uploader("Upload your Resume PDF file", type=["pdf"])
     job_desc_text = st.text_area("Paste the Job Description text here")
@@ -82,11 +73,11 @@ if user_type == "Student":
             st.write(advice)
 
 elif user_type == "Staff":
-    st.title("🔐 Staff Panel")
+    st.title(" 510 Staff Panel")
 
     st_lottie(lottie_animation, height=200)
 
-    st.sidebar.title("📂 Upload your files (PDF or CSV)")
+    st.sidebar.title(" 4c2 Upload your files (PDF or CSV)")
     uploaded_files = st.sidebar.file_uploader("Choose files", type=["pdf", "csv"], accept_multiple_files=True)
 
     if "chat_history" not in st.session_state:
@@ -115,21 +106,21 @@ elif user_type == "Staff":
                 all_text += text + "\n"
 
             st.session_state.vector_db = create_vectorstore(all_text)
-            st.success("✅ Files processed successfully!")
+            st.success(" 197 Files processed successfully!")
 
     st.divider()
-    st.subheader("💬 Ask a question")
+    st.subheader(" 4ac Ask a question")
 
     query = st.text_input("Type your question here...", placeholder="e.g. What is the summary of these documents?")
 
     if st.button("Ask") and query:
         if st.session_state.vector_db is None:
-            st.error("❌ Please upload and process files first.")
+            st.error(" 6d1 Please upload and process files first.")
         else:
             with st.spinner("Thinking..."):
                 answer = get_answer(st.session_state.vector_db, query)
-                st.session_state.chat_history.append(("🧑 You", query))
-                st.session_state.chat_history.append(("🤖 Chatbot", answer))
+                st.session_state.chat_history.append((" 9d1 You", query))
+                st.session_state.chat_history.append((" 916 Chatbot", answer))
 
     if st.session_state.chat_history:
         for sender, message in reversed(st.session_state.chat_history):
